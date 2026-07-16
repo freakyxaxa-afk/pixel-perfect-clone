@@ -4,6 +4,7 @@ import {
   Link,
   createRootRouteWithContext,
   useRouter,
+  useRouterState,
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
@@ -14,6 +15,10 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { AdminProvider } from "@/lib/admin-context";
 import { AdminBar, AdminLoginTrigger } from "@/components/AdminBar";
+import { Header } from "@/components/Header";
+import { AnnouncementBar } from "@/components/AnnouncementBar";
+import { FloatingButtons } from "@/components/FloatingButtons";
+
 
 function NotFoundComponent() {
   return (
