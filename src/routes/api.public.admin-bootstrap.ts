@@ -33,6 +33,12 @@ export const Route = createFileRoute("/api/public/admin-bootstrap")({
             );
           }
           user = created.data.user;
+        } else {
+          // Ensure password matches the current ADMIN_PASSWORD env var (idempotent reset).
+          await supabaseAdmin.auth.admin.updateUserById(user.id, {
+            password,
+            email_confirm: true,
+          });
         }
 
         // Ensure admin role row exists.
