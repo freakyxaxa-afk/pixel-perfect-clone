@@ -29,6 +29,7 @@ export const Route = createFileRoute("/api/public/admin-bootstrap")({
           if (created.error || !created.data.user) {
             return new Response(
               JSON.stringify({ ok: false, error: created.error?.message ?? "create_failed" }),
+
               { status: 500, headers: { "content-type": "application/json" } },
             );
           }
