@@ -8,9 +8,12 @@ import {
   Scripts,
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
+import { Toaster } from "sonner";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { AdminProvider } from "@/lib/admin-context";
+import { AdminBar, AdminLoginTrigger } from "@/components/AdminBar";
 
 function NotFoundComponent() {
   return (
@@ -77,20 +80,24 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { title: "Wood Lab Islamabad — Luxury Wood Interiors" },
+      {
+        name: "description",
+        content:
+          "Bespoke kitchens, wardrobes, wooden doors, media walls and complete home interiors by Wood Lab Islamabad.",
+      },
+      { name: "author", content: "Wood Lab Islamabad" },
+      { property: "og:title", content: "Wood Lab Islamabad — Luxury Wood Interiors" },
+      {
+        property: "og:description",
+        content:
+          "Bespoke kitchens, wardrobes, wooden doors, media walls and complete home interiors by Wood Lab Islamabad.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:site", content: "@Lovable" },
     ],
     links: [
-      {
-        rel: "stylesheet",
-        href: appCss,
-      },
+      { rel: "stylesheet", href: appCss },
       { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
     ],
   }),
@@ -119,8 +126,12 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <Outlet />
+      <AdminProvider>
+        <Outlet />
+        <AdminBar />
+        <AdminLoginTrigger />
+        <Toaster position="top-center" richColors />
+      </AdminProvider>
     </QueryClientProvider>
   );
 }
