@@ -25,6 +25,7 @@ export function CategoryDetail({ data }: { data: CategoryContent }) {
 
   // DB-managed images (admin panel). If any exist, they take precedence.
   const { images: dbImages, reload } = useCategoryImages(slug);
+  const isLoading = dbImages === null;
   const hasDb = dbImages && dbImages.length > 0;
   const galleryImages: { src: string; alt: string }[] = hasDb
     ? dbImages!.map((img) => ({ src: img.public_url, alt: title }))
@@ -77,7 +78,11 @@ export function CategoryDetail({ data }: { data: CategoryContent }) {
                 className="block w-full"
                 aria-label="Open full-screen viewer"
               >
-                <ProductImageZoom src={main.src} alt={main.alt} />
+                {isLoading ? (
+                  <div className="aspect-[4/3] w-full animate-pulse rounded-lg bg-muted" />
+                ) : (
+                  <ProductImageZoom src={main.src} alt={main.alt} />
+                )}
               </button>
               {galleryImages.length > 1 && (
                 <>
