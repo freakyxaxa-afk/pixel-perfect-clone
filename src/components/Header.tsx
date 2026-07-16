@@ -141,7 +141,7 @@ export function Header() {
               )}
             />
             <span className="hidden font-display text-xl font-bold tracking-tight text-foreground sm:flex">
-              Wood Lab
+              Wood Lab Islamabad
             </span>
             <span className="font-display text-xl font-bold tracking-tight text-foreground sm:hidden">
               Wood Lab Islamabad
