@@ -78,7 +78,11 @@ export function CategoryDetail({ data }: { data: CategoryContent }) {
                 className="block w-full"
                 aria-label="Open full-screen viewer"
               >
-                <ProductImageZoom src={main.src} alt={main.alt} />
+                {isLoading ? (
+                  <div className="aspect-[4/3] w-full animate-pulse rounded-lg bg-muted" />
+                ) : (
+                  <ProductImageZoom src={main.src} alt={main.alt} />
+                )}
               </button>
               {galleryImages.length > 1 && (
                 <>
