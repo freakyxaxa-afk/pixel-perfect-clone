@@ -29,11 +29,16 @@ export const Route = createFileRoute("/api/public/admin-bootstrap")({
           if (created.error || !created.data.user) {
             return new Response(
               JSON.stringify({ ok: false, error: created.error?.message ?? "create_failed" }),
-
               { status: 500, headers: { "content-type": "application/json" } },
             );
           }
           user = created.data.user;
+        } else {
+          // Ensure password matches the current ADMIN_PASSWORD env var (idempotent reset).
+          await supabaseAdmin.auth.admin.updateUserById(user.id, {
+            password,
+            email_confirm: true,
+          });
         }
 
         // Ensure admin role row exists.
