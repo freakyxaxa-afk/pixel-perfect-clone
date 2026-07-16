@@ -140,13 +140,8 @@ export function Header() {
                 scrolled ? "h-[42px] sm:h-[46px]" : "h-[45px] sm:h-[52px]",
               )}
             />
-            <span className="hidden flex-col leading-tight sm:flex">
-              <span className="font-display text-xl font-bold tracking-tight text-foreground">
-                Wood Lab
-              </span>
-              <span className="text-[10px] font-medium uppercase tracking-[0.2em] text-muted-foreground">
-                Wood Lab Islamabad Pvt.Ltd
-              </span>
+            <span className="hidden font-display text-xl font-bold tracking-tight text-foreground sm:flex">
+              Wood Lab
             </span>
             <span className="font-display text-xl font-bold tracking-tight text-foreground sm:hidden">
               Wood Lab Islamabad
