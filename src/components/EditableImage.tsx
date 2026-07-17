@@ -48,12 +48,13 @@ export function EditableImage({
   height,
 }: Props) {
   const { isAdmin } = useAdmin();
-  const dbCover = useCoverUrl(slug);
+  const { url: dbCover, loading: coverLoading } = useCoverUrl(slug);
   const { reload } = useCategoryImages(slug);
   const displaySrc = dbCover ?? src;
   const fileRef = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
   const [cropFile, setCropFile] = useState<File | null>(null);
+  const [imgLoaded, setImgLoaded] = useState(false);
 
   const onReplace = (file: File | undefined) => {
     if (!file) return;
@@ -103,15 +104,25 @@ export function EditableImage({
 
   return (
     <div className={`group relative ${className}`}>
-      <img
-        src={displaySrc}
-        alt={alt}
-        loading={loading}
-        width={width}
-        height={height}
-        className={imgClassName}
-        style={imgStyle}
-      />
+      {(coverLoading || !imgLoaded) && (
+        <div
+          className={`absolute inset-0 animate-pulse bg-muted ${imgClassName?.includes("rounded") ? "" : ""}`}
+          aria-hidden="true"
+        />
+      )}
+      {!coverLoading && (
+        <img
+          key={displaySrc}
+          src={displaySrc}
+          alt={alt}
+          loading={loading}
+          width={width}
+          height={height}
+          className={imgClassName}
+          style={{ ...imgStyle, opacity: imgLoaded ? undefined : 0 }}
+          onLoad={() => setImgLoaded(true)}
+        />
+      )}
       {overlay}
       {isAdmin && (
         <>
