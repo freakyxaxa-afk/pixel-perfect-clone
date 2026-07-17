@@ -112,7 +112,7 @@ export async function addImage(slug: string, file: File): Promise<CategoryImage>
     .insert({
       category_slug: slug,
       storage_path: path,
-      public_url: proxyUrl(path),
+      public_url: publicUrlFor(path),
       is_cover: existing.length === 0,
       sort_order: nextSort,
     })
@@ -133,7 +133,7 @@ export async function replaceImage(id: string, slug: string, file: File): Promis
   const newPath = await uploadFileToFolder(folder, file);
   const { error } = await supabase
     .from("category_images")
-    .update({ storage_path: newPath, public_url: proxyUrl(newPath) })
+    .update({ storage_path: newPath, public_url: publicUrlFor(newPath) })
     .eq("id", id);
   if (error) throw new Error(error.message);
   if (row?.storage_path) {
