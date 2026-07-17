@@ -104,15 +104,25 @@ export function EditableImage({
 
   return (
     <div className={`group relative ${className}`}>
-      <img
-        src={displaySrc}
-        alt={alt}
-        loading={loading}
-        width={width}
-        height={height}
-        className={imgClassName}
-        style={imgStyle}
-      />
+      {(coverLoading || !imgLoaded) && (
+        <div
+          className={`absolute inset-0 animate-pulse bg-muted ${imgClassName?.includes("rounded") ? "" : ""}`}
+          aria-hidden="true"
+        />
+      )}
+      {!coverLoading && (
+        <img
+          key={displaySrc}
+          src={displaySrc}
+          alt={alt}
+          loading={loading}
+          width={width}
+          height={height}
+          className={imgClassName}
+          style={{ ...imgStyle, opacity: imgLoaded ? undefined : 0 }}
+          onLoad={() => setImgLoaded(true)}
+        />
+      )}
       {overlay}
       {isAdmin && (
         <>
