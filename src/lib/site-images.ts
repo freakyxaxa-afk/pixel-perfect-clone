@@ -55,11 +55,14 @@ export function useCategoryImages(slug: string) {
   return { images, reload };
 }
 
-// Returns the cover URL (first image) for a slug, or null if none is set.
-export function useCoverUrl(slug: string): string | null {
+// Returns the cover URL (first image) for a slug plus loading state.
+// `loading` is true until the DB has been queried at least once, so callers
+// can render a skeleton instead of flashing a stale fallback image.
+export function useCoverUrl(slug: string): { url: string | null; loading: boolean } {
   const { images } = useCategoryImages(slug);
-  if (!images || images.length === 0) return null;
-  return images[0].public_url;
+  if (images === null) return { url: null, loading: true };
+  if (images.length === 0) return { url: null, loading: false };
+  return { url: images[0].public_url, loading: false };
 }
 
 async function uploadFileToFolder(folder: string, file: File): Promise<string> {
