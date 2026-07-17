@@ -19,9 +19,34 @@ export function folderForSlug(slug: string): string {
   return parent;
 }
 
-// Public URL for a stored image, served via the app proxy (bucket may be private).
-export function proxyUrl(storagePath: string) {
-  return `/api/public/site-image/${storagePath}`;
+// Resolve a browser-accessible URL for a storage path. Works for both public
+// and private buckets: `getPublicUrl` returns a URL for public buckets, and
+// `createSignedUrl` returns an authenticated URL when the bucket is private.
+// The site-images bucket has an anon SELECT policy so signed URLs succeed
+// without a user session. We fall back to the public URL shape if signing
+// fails (e.g. offline dev).
+const SIGNED_URL_TTL_SECONDS = 60 * 60 * 24 * 365; // 1 year
+
+export function publicUrlFor(storagePath: string): string {
+  return supabase.storage.from("site-images").getPublicUrl(storagePath).data.publicUrl;
+}
+
+async function resolveUrls(paths: string[]): Promise<Map<string, string>> {
+  const map = new Map<string, string>();
+  if (paths.length === 0) return map;
+  const { data, error } = await supabase.storage
+    .from("site-images")
+    .createSignedUrls(paths, SIGNED_URL_TTL_SECONDS);
+  if (!error && data) {
+    for (const row of data) {
+      if (row.path && row.signedUrl) map.set(row.path, row.signedUrl);
+    }
+  }
+  // Fallback for any path we couldn't sign.
+  for (const p of paths) {
+    if (!map.has(p)) map.set(p, publicUrlFor(p));
+  }
+  return map;
 }
 
 export async function fetchImagesForSlug(slug: string): Promise<CategoryImage[]> {
@@ -31,8 +56,9 @@ export async function fetchImagesForSlug(slug: string): Promise<CategoryImage[]>
     .eq("category_slug", slug)
     .order("sort_order", { ascending: true })
     .order("created_at", { ascending: true });
-  if (error) return [];
-  return (data ?? []) as CategoryImage[];
+  if (error || !data) return [];
+  const urls = await resolveUrls(data.map((r) => r.storage_path));
+  return data.map((r) => ({ ...r, public_url: urls.get(r.storage_path) ?? r.public_url })) as CategoryImage[];
 }
 
 export function useCategoryImages(slug: string) {
