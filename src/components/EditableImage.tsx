@@ -48,12 +48,13 @@ export function EditableImage({
   height,
 }: Props) {
   const { isAdmin } = useAdmin();
-  const dbCover = useCoverUrl(slug);
+  const { url: dbCover, loading: coverLoading } = useCoverUrl(slug);
   const { reload } = useCategoryImages(slug);
   const displaySrc = dbCover ?? src;
   const fileRef = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
   const [cropFile, setCropFile] = useState<File | null>(null);
+  const [imgLoaded, setImgLoaded] = useState(false);
 
   const onReplace = (file: File | undefined) => {
     if (!file) return;
