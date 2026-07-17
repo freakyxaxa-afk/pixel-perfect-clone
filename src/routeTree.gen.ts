@@ -56,7 +56,6 @@ import { Route as DoorsEngineeredDoorsRouteImport } from './routes/doors.enginee
 import { Route as DoorsBedBathroomDoorsRouteImport } from './routes/doors.bed-bathroom-doors'
 import { Route as DesignSubcategoryProductRouteImport } from './routes/design.$subcategory.$product'
 import { Route as ApiPublicAdminBootstrapRouteImport } from './routes/api.public.admin-bootstrap'
-import { Route as ApiPublicSiteImageSplatRouteImport } from './routes/api.public.site-image.$'
 
 const WardrobesRoute = WardrobesRouteImport.update({
   id: '/wardrobes',
@@ -296,11 +295,6 @@ const ApiPublicAdminBootstrapRoute = ApiPublicAdminBootstrapRouteImport.update({
   path: '/api/public/admin-bootstrap',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiPublicSiteImageSplatRoute = ApiPublicSiteImageSplatRouteImport.update({
-  id: '/api/public/site-image/$',
-  path: '/api/public/site-image/$',
-  getParentRoute: () => rootRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -350,7 +344,6 @@ export interface FileRoutesByFullPath {
   '/wardrobes/': typeof WardrobesIndexRoute
   '/api/public/admin-bootstrap': typeof ApiPublicAdminBootstrapRoute
   '/design/$subcategory/$product': typeof DesignSubcategoryProductRoute
-  '/api/public/site-image/$': typeof ApiPublicSiteImageSplatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -394,7 +387,6 @@ export interface FileRoutesByTo {
   '/wardrobes': typeof WardrobesIndexRoute
   '/api/public/admin-bootstrap': typeof ApiPublicAdminBootstrapRoute
   '/design/$subcategory/$product': typeof DesignSubcategoryProductRoute
-  '/api/public/site-image/$': typeof ApiPublicSiteImageSplatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -445,7 +437,6 @@ export interface FileRoutesById {
   '/wardrobes/': typeof WardrobesIndexRoute
   '/api/public/admin-bootstrap': typeof ApiPublicAdminBootstrapRoute
   '/design/$subcategory/$product': typeof DesignSubcategoryProductRoute
-  '/api/public/site-image/$': typeof ApiPublicSiteImageSplatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -497,7 +488,6 @@ export interface FileRouteTypes {
     | '/wardrobes/'
     | '/api/public/admin-bootstrap'
     | '/design/$subcategory/$product'
-    | '/api/public/site-image/$'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -541,7 +531,6 @@ export interface FileRouteTypes {
     | '/wardrobes'
     | '/api/public/admin-bootstrap'
     | '/design/$subcategory/$product'
-    | '/api/public/site-image/$'
   id:
     | '__root__'
     | '/'
@@ -591,7 +580,6 @@ export interface FileRouteTypes {
     | '/wardrobes/'
     | '/api/public/admin-bootstrap'
     | '/design/$subcategory/$product'
-    | '/api/public/site-image/$'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -614,7 +602,6 @@ export interface RootRouteChildren {
   WardrobesRoute: typeof WardrobesRouteWithChildren
   ApiPublicAdminBootstrapRoute: typeof ApiPublicAdminBootstrapRoute
   DesignSubcategoryProductRoute: typeof DesignSubcategoryProductRoute
-  ApiPublicSiteImageSplatRoute: typeof ApiPublicSiteImageSplatRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -948,13 +935,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicAdminBootstrapRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/public/site-image/$': {
-      id: '/api/public/site-image/$'
-      path: '/api/public/site-image/$'
-      fullPath: '/api/public/site-image/$'
-      preLoaderRoute: typeof ApiPublicSiteImageSplatRouteImport
-      parentRoute: typeof rootRouteImport
-    }
   }
 }
 
@@ -1091,7 +1071,6 @@ const rootRouteChildren: RootRouteChildren = {
   WardrobesRoute: WardrobesRouteWithChildren,
   ApiPublicAdminBootstrapRoute: ApiPublicAdminBootstrapRoute,
   DesignSubcategoryProductRoute: DesignSubcategoryProductRoute,
-  ApiPublicSiteImageSplatRoute: ApiPublicSiteImageSplatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
