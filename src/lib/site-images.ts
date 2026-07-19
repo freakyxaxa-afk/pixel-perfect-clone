@@ -222,6 +222,7 @@ export async function deleteImage(id: string): Promise<void> {
     .maybeSingle();
   const { error } = await supabase.from("category_images").delete().eq("id", id);
   if (error) throw new Error(error.message);
+  if (row?.category_slug) invalidateCache(row.category_slug);
   if (row?.storage_path) {
     await supabase.storage.from("site-images").remove([row.storage_path]);
   }
