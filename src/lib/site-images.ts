@@ -197,6 +197,7 @@ export async function replaceImage(id: string, slug: string, file: File): Promis
     .update({ storage_path: newPath, public_url: publicUrlFor(newPath) })
     .eq("id", id);
   if (error) throw new Error(error.message);
+  invalidateCache(slug);
   if (row?.storage_path) {
     await supabase.storage.from("site-images").remove([row.storage_path]);
   }
