@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { optimizeImage } from "@/lib/image-optimize";
 
 export type CategoryImage = {
   id: string;
@@ -92,11 +93,12 @@ export function useCoverUrl(slug: string): { url: string | null; loading: boolea
 }
 
 async function uploadFileToFolder(folder: string, file: File): Promise<string> {
-  const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
+  const optimized = await optimizeImage(file);
+  const ext = optimized.name.split(".").pop()?.toLowerCase() || "webp";
   const path = `${folder}/${crypto.randomUUID()}.${ext}`;
   const { error } = await supabase.storage
     .from("site-images")
-    .upload(path, file, { contentType: file.type, upsert: false });
+    .upload(path, optimized, { contentType: optimized.type, upsert: false });
   if (error) throw new Error(error.message);
   return path;
 }
