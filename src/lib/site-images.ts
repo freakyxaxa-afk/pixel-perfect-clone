@@ -50,6 +50,53 @@ async function resolveUrls(paths: string[]): Promise<Map<string, string>> {
   return map;
 }
 
+// In-memory cache of resolved images per slug. Persisted to sessionStorage so
+// navigating between pages (or a full reload) shows images instantly instead
+// of waiting on two sequential round trips (DB select + createSignedUrls).
+const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
+const memCache = new Map<string, { at: number; images: CategoryImage[] }>();
+
+function cacheKey(slug: string) {
+  return `site-images:${slug}`;
+}
+
+function readCache(slug: string): CategoryImage[] | null {
+  const mem = memCache.get(slug);
+  if (mem && Date.now() - mem.at < CACHE_TTL_MS) return mem.images;
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = sessionStorage.getItem(cacheKey(slug));
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as { at: number; images: CategoryImage[] };
+    if (Date.now() - parsed.at > CACHE_TTL_MS) return null;
+    memCache.set(slug, parsed);
+    return parsed.images;
+  } catch {
+    return null;
+  }
+}
+
+function writeCache(slug: string, images: CategoryImage[]) {
+  const entry = { at: Date.now(), images };
+  memCache.set(slug, entry);
+  if (typeof window === "undefined") return;
+  try {
+    sessionStorage.setItem(cacheKey(slug), JSON.stringify(entry));
+  } catch {
+    /* quota — ignore */
+  }
+}
+
+function invalidateCache(slug: string) {
+  memCache.delete(slug);
+  if (typeof window === "undefined") return;
+  try {
+    sessionStorage.removeItem(cacheKey(slug));
+  } catch {
+    /* ignore */
+  }
+}
+
 export async function fetchImagesForSlug(slug: string): Promise<CategoryImage[]> {
   const { data, error } = await supabase
     .from("category_images")
@@ -59,18 +106,28 @@ export async function fetchImagesForSlug(slug: string): Promise<CategoryImage[]>
     .order("created_at", { ascending: true });
   if (error || !data) return [];
   const urls = await resolveUrls(data.map((r) => r.storage_path));
-  return data.map((r) => ({ ...r, public_url: urls.get(r.storage_path) ?? r.public_url })) as CategoryImage[];
+  const images = data.map((r) => ({
+    ...r,
+    public_url: urls.get(r.storage_path) ?? r.public_url,
+  })) as CategoryImage[];
+  writeCache(slug, images);
+  return images;
 }
 
 export function useCategoryImages(slug: string) {
-  const [images, setImages] = useState<CategoryImage[] | null>(null);
+  const cached = readCache(slug);
+  const [images, setImages] = useState<CategoryImage[] | null>(cached);
 
   const reload = useCallback(async () => {
-    setImages(await fetchImagesForSlug(slug));
+    invalidateCache(slug);
+    const fresh = await fetchImagesForSlug(slug);
+    setImages(fresh);
   }, [slug]);
 
   useEffect(() => {
     let alive = true;
+    const c = readCache(slug);
+    if (c) setImages(c);
     fetchImagesForSlug(slug).then((imgs) => {
       if (alive) setImages(imgs);
     });
@@ -81,6 +138,7 @@ export function useCategoryImages(slug: string) {
 
   return { images, reload };
 }
+
 
 // Returns the cover URL (first image) for a slug plus loading state.
 // `loading` is true until the DB has been queried at least once, so callers
