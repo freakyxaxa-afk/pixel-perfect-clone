@@ -116,6 +116,8 @@ export function EditableImage({
           src={displaySrc}
           alt={alt}
           loading={loading}
+          decoding="async"
+          fetchPriority={loading === "eager" ? "high" : undefined}
           width={width}
           height={height}
           className={imgClassName}
