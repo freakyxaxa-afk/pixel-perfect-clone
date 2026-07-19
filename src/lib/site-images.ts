@@ -259,4 +259,5 @@ export async function reorderImages(slug: string, ids: string[]): Promise<void> 
   if (ids[0]) {
     await supabase.from("category_images").update({ is_cover: true }).eq("id", ids[0]);
   }
+  invalidateCache(slug);
 }
