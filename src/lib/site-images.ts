@@ -179,6 +179,7 @@ export async function addImage(slug: string, file: File): Promise<CategoryImage>
     .select("*")
     .single();
   if (error) throw new Error(error.message);
+  invalidateCache(slug);
   return data as CategoryImage;
 }
 
